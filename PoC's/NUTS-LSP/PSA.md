@@ -60,8 +60,8 @@ onderstaande opties gebruikt kunnen worden:
 - Avond, nacht en weekend zorg die bij de VVT informatie wil ophalen
 
 > **Note:** Probleem hierbij is dat er (naar mijn weten) nog geen
-kwaliteitsrichtlijnen (de juridische grondslag) noch informatiestandaarden voor
-zijn (behalve het AMO).
+> kwaliteitsrichtlijnen (de juridische grondslag) noch informatiestandaarden voor
+> zijn (behalve het AMO).
 
 ## Architectuur samenvatting
 
@@ -115,11 +115,11 @@ betrouwbaarheidsniveau (eIDAS hoog) op basis van gesignde SAML2-tokens van de
 UZI-pas. Hierbij zijn er twee opties:
 
 1. De gebruiker signet de transactie met de eigen UZI-pas (al dan niet onder
-mandaat van een arts).
+   mandaat van een arts).
 
 2. De uiteindelijk verantwoordelijke arts heeft een zogenaamd mandaattoken
-getekend. Hiermee kan het systeem (icm een transactietoken en een
-inschrijftoken) gegevens kan raadplegen.
+   getekend. Hiermee kan het systeem (icm een transactietoken en een
+   inschrijftoken) gegevens kan raadplegen.
 
 #### Autorisatie
 
@@ -131,7 +131,7 @@ transactie bepaald is welke UZI-rolcodes het bericht mogen versturen.
 Lokalisatie van gegevens hangt nauw samen met toestemming.
 
 - In het geval een brondossierhouder de toestemmingen in het XIS beheerd wordt
-  alleen met toestemming de verwijsindex *van* het LSP gevuld met
+  alleen met toestemming de verwijsindex _van_ het LSP gevuld met
   lokalisatiemetadata
 
 - In het geval de brosdossierhouder de toestemmingen in Mitz beheert wordt
@@ -160,17 +160,43 @@ vertaal algoritmes.
 
 #### I&A
 
-#### Vaststellen zorgaanbieder
+##### Zorgaanbieder
+
+Authenticatie van de zorgaanbieder geschiedt op basis van een URA credential, afgeleid van
+het UZI-server certificaat.
+
+##### Vaststellen zorgverlener
+
+We ondersteunenn 3 manieren voor het vaststellen van de zorgverlener:
+
+Zorgverleners in de VVT hebben doorgaans geen persoonlijke authenticatiemiddelen. Indien dat niet het geval is, maken we gebruik van NutsEmployeeCredential. Dit credential wordt uitgegeven door de zorgaanbieder en bevat de gegevens van de medewerker.
+
+We kunnen gebruik maken van een credential ondertekent door de UZI-pas. Deze ondertekening wordt gedaan door gebruik te maken van de dienst ZorgID van VZVZ.
+
+Een derde manier is gebruik te maken van de app Yivi en een kaartje uitgegeven door bijvoorbeeld de bank.
+
+In de nabije toekomst verwachten we gebruik te kunnen maken van SSI wallets zoals de Nederlandse wallet. Ook hiervoor zijn er momenteel nog geen credentials beschikbaar.
 
 #### Autorisatie
 
+Autorisatie wordt of hardcoded in de applicatie ingebouwd, of via autorisatie policies uitgewerkt in een taal zoals bijvoorbeeld Rego icm Open Policy Agent.
+
 #### Lokalisatie
+
+Lokalisatie gebeurt op basis van het zorgnetwerk. Deze worden bij de raadplegende zorginstellingen geadministreerd, of federatief opgesteld zoals bij de use-case Shared Care Planning.
 
 #### Adressering
 
+Raadplegers kunnen op 2 manieren de technische adressen van bronhouders vinden:
+Via het gedistribueerde nuts netwerk (dit wordt uitgefaseerd), of via een zogenaamde "Discovery Service". Deze discovery service wordt per toepassing ingericht en gebruikt door alle deelnemers van de toepassing.
+
 #### Logging
 
+Logging vindt plaats bij de bronhouders en is buiten scope van Nuts.
+
 #### Conversie van standaarden (FHIR)
+
+De bronhouders dienen zelf de juiste FHIR endpoints aan te leveren. Conversie van data en formaat is buiten scope van Nuts.
 
 ## Eindsituatie van dit project
 
@@ -258,13 +284,13 @@ wordt de aanname gedaan dat de uitkomsten hiervan geen negatieve invloed op de
 keuzes binnen het project hebben.
 
 > **Note:** Voordat VZVZ een productie pilot kan doen moet het vraagstuk rondom
-het veilige netwerk opgelost zijn. Bij de PoC is het reguliere internet nog
-acceptabel. Bij een pilot moet de oplossing voldoen aan de wetgeving. VZVZ stelt
-dat dit betekent dat er eisen gesteld moeten worden aan de netwerkleverancier
-(waaronder de NEN7512 eis dat de communicatie binnen de EER moet blijven). Met
-publiek internet kan die garantie niet gegeven worden. Of LDN komt met een
-alternatief voor GZN dat aan alle wet- en regelgeving voldoet of er is -ook voor
-de pilot- een blokkade.
+> het veilige netwerk opgelost zijn. Bij de PoC is het reguliere internet nog
+> acceptabel. Bij een pilot moet de oplossing voldoen aan de wetgeving. VZVZ stelt
+> dat dit betekent dat er eisen gesteld moeten worden aan de netwerkleverancier
+> (waaronder de NEN7512 eis dat de communicatie binnen de EER moet blijven). Met
+> publiek internet kan die garantie niet gegeven worden. Of LDN komt met een
+> alternatief voor GZN dat aan alle wet- en regelgeving voldoet of er is -ook voor
+> de pilot- een blokkade.
 
 ### Toestemming
 
@@ -289,8 +315,7 @@ richtlijnen die nu in ontwikkeling zijn.
 Binnen de VVT zijn veel zorgverleners werkzaam die geen BIG registratie hebben.
 Bestaande richtlijnen die van toepassing zijn op de ontsluiting van medische
 gegevens (zoals [die van de
-KNMP](https://www.knmp.nl/richtlijnen/overdracht-van-medicatiegegevens-de-keten
-"https://www.knmp.nl/richtlijnen/overdracht-van-medicatiegegevens-de-keten"))
+KNMP](https://www.knmp.nl/richtlijnen/overdracht-van-medicatiegegevens-de-keten "https://www.knmp.nl/richtlijnen/overdracht-van-medicatiegegevens-de-keten"))
 eisen echter dat zorgverleners die deze gegevens raadplegen BIG geregistreerd
 zijn. Binnen dit project wordt daarom in de voorbeelden enkel met BIG
 geregistreerde gebruikers gewerkt. De aanname is dat de technische oplossingen
@@ -300,8 +325,7 @@ rondom thuiszorg en andere VVT medewerkers is opgelost.
 ### Onderdelen uit het trust-over-ip model
 
 Voor dit project zal enkel gewerkt worden aan de Technology aspecten (laag 1 tot
-en met 4) uit het [trust-over-ip model](https://trustoverip.org/toip-model/
-"https://trustoverip.org/toip-model/"). De Governance en Ecosystem onderdelen
+en met 4) uit het [trust-over-ip model](https://trustoverip.org/toip-model/ "https://trustoverip.org/toip-model/"). De Governance en Ecosystem onderdelen
 worden buiten dit project opgepakt.
 
 ## Architectuur risico’s
