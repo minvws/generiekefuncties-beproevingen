@@ -52,16 +52,9 @@ medicatie overzicht als casus gebruikt. Hierbij kan een, volgens de autorisatie
 richtlijnen geauthenticeerde, arts in via de Nuts node welke verbonden is met
 het LSP een overzicht krijgen van de voorgeschreven medicatie.
 
-Het twee scenario heeft nog geen concrete casus. Hierbij zou mogelijk een van de
-onderstaande opties gebruikt kunnen worden:
-
-- Huisarts die inzage wil bij de VVT
-
-- Avond, nacht en weekend zorg die bij de VVT informatie wil ophalen
-
-> **Note:** Probleem hierbij is dat er (naar mijn weten) nog geen
-> kwaliteitsrichtlijnen (de juridische grondslag) noch informatiestandaarden voor
-> zijn (behalve het AMO).
+Het twee scenario heeft nog geen concrete casus. Hierbij wordt in de PoC gewerkt
+met het ophalen van de Patient resource aangevuld met de Observervation
+resource. Dit is puur een demonstratie van technische werking en mogelijkheden.
 
 ## Architectuur samenvatting
 
@@ -135,7 +128,7 @@ Lokalisatie van gegevens hangt nauw samen met toestemming.
   lokalisatiemetadata
 
 - In het geval de brosdossierhouder de toestemmingen in Mitz beheert wordt
-  altijd het actualiteitenregister *in* het LSP met lokalisatiemetadata gevuld,
+  altijd het actualiteitenregister _in_ het LSP met lokalisatiemetadata gevuld,
   maar wordt dit pas vrijgegeven als Mitz hiervoor een toestemming heeft
   afgegeven.
 
@@ -162,33 +155,43 @@ vertaal algoritmes.
 
 ##### Zorgaanbieder
 
-Authenticatie van de zorgaanbieder geschiedt op basis van een URA credential, afgeleid van
-het UZI-server certificaat.
+Nuts maakt voor verificatie van zorgaanbieders gebruik van verifiable
+credentials. De wijze waarop deze gemaakt worden is via een UZI-server
+certificaat.
 
 ##### Vaststellen zorgverlener
 
-We ondersteunenn 3 manieren voor het vaststellen van de zorgverlener:
+Binnen Nuts wordt er gewerkt met verifiable credentials voor het vaststellen van
+de zorgverlener. Nuts kent drie wijzen van het authenticeren van zorgverleners:
 
-Zorgverleners in de VVT hebben doorgaans geen persoonlijke authenticatiemiddelen. Indien dat niet het geval is, maken we gebruik van NutsEmployeeCredential. Dit credential wordt uitgegeven door de zorgaanbieder en bevat de gegevens van de medewerker.
-
-We kunnen gebruik maken van een credential ondertekent door de UZI-pas. Deze ondertekening wordt gedaan door gebruik te maken van de dienst ZorgID van VZVZ.
-
-Een derde manier is gebruik te maken van de app Yivi en een kaartje uitgegeven door bijvoorbeeld de bank.
-
-In de nabije toekomst verwachten we gebruik te kunnen maken van SSI wallets zoals de Nederlandse wallet. Ook hiervoor zijn er momenteel nog geen credentials beschikbaar.
+1. Zorgverleners met een UZI-pas kunnen ZorgID gebruiken voor het maken van een credential.
+2. Voor zorgverleners zonder persoonslijke (UZI) authenticatie middelen wordt gebruik
+   gemaakt van de door de zorgaanbieder uitgegeven credentials
+   (NutsEmployeeCredential).
+3. Zorgverleners kunnen persoonlijk authenticeren via de Yivi app en hun bank.
+   Dit levert enkel gegevens op over de persoon (niet dat dit een zorgverlener
+   is).
 
 #### Autorisatie
 
-Autorisatie wordt of hardcoded in de applicatie ingebouwd, of via autorisatie policies uitgewerkt in een taal zoals bijvoorbeeld Rego icm Open Policy Agent.
+Applicaties die gebruik maken van Nuts hebben eigen autorisatie logica die gebruik maakt van de eerder genoemde credentials.
 
 #### Lokalisatie
 
-Lokalisatie gebeurt op basis van het zorgnetwerk. Deze worden bij de raadplegende zorginstellingen geadministreerd, of federatief opgesteld zoals bij de use-case Shared Care Planning.
+Er zijn twee wijzen waarop binnen Nut gelokaliseerd wordt.
+
+1. Voor lokalisatie wordt per instelling een zorgnetwerk geregistreerd. Dit
+vaste netwerk wordt bij lokalisatie bevraagd op beschikbaarheid van gegevens.
+
+2. Een shared care plan kan gebruikt worden om samenwerkende organisaties te
+   bepalen. Deze kunnen daarmee bevraagd worden bij lokalisatie.
 
 #### Adressering
 
 Raadplegers kunnen op 2 manieren de technische adressen van bronhouders vinden:
-Via het gedistribueerde nuts netwerk (dit wordt uitgefaseerd), of via een zogenaamde "Discovery Service". Deze discovery service wordt per toepassing ingericht en gebruikt door alle deelnemers van de toepassing.
+
+1. Via een per toepassing in te richten "discovery" dienst. Deze dienst wordt vervolgens gebruikt door de deelnemers van de toepassing.
+2. Via het gedistribueerde Nuts-netwerk. Deze optie wordt uitgefaseerd.
 
 #### Logging
 
@@ -196,14 +199,17 @@ Logging vindt plaats bij de bronhouders en is buiten scope van Nuts.
 
 #### Conversie van standaarden (FHIR)
 
-De bronhouders dienen zelf de juiste FHIR endpoints aan te leveren. Conversie van data en formaat is buiten scope van Nuts.
+Het bieden van endpoints zoals FHIR is buiten scope van Nuts. Dit wordt ingevuld
+door de toepassingen die gebruik maken van de Nuts node(s). Binnen de Nuts
+gebruikers wordt daarom per toepassing afgesproken welke standaarden hiervoor te
+hanteren.
 
 ## Eindsituatie van dit project
 
 In de eindsituatie worden naast componenten uit het LSP en Nuts ook de Generieke
 Functies ingezet.
 
-#### I&A
+### I&A
 
 #### Vaststellen zorgverlener
 
@@ -223,35 +229,90 @@ verificatie te doen.
 Voor de communicatie vanuit de MSZ naar de VVT zal de MSZ applicatie een
 verifiable credential maken?
 
-#### Autorisatie
+### Autorisatie
 
 Bij de op het LSP aangesloten zorgaanbieder zal op de huidige wijze bepaald
 worden of er expliciete toestemming verleend is.
 
-#### Lokalisatie
+### Lokalisatie
 
 In de eindsituatie zal er gewerkt worden volgens de Generieke Functie
 lokalisatie. Hierbij wordt de NVI ingezet.
 
-#### Adressering
+### Adressering
 
 Voor adressering zal in de eindsituatie gebruik gemaakt worden van de Generieke
 Functie Adressering. Hierbij zal het LSP voor haar deelnemers een adresgegevens
 bron beschikbaar maken. Voor de gebruikers van Nuts nodes zal de adresgegevens
 bron ingebouwd worden in de Nuts node?
 
-#### Logging
+### Logging
 
 Het LSP logt op de wijze die het nu al doet bij aanvragen van VVT naar MSZ. Voor
-vragen in de andere richting (MSZ naar VVT) zal ....
+vragen in de andere richting (LSP naar Nuts) zal dit werken op de wijze zoals
+dit nu ook gebeurd bij Nuts-Nuts bevragingen.
 
-#### Conversie van standaarden (FHIR)
+### Conversie van standaarden (FHIR)
 
 Het LSP draagt zorg voor de conversie van standaarden bij bevraging van VVT naar
 MSZ. De Nuts omgeving kan gebruik maken van FHIR R3 voor het opvragen van
 gegevens. De data vanuit de VVT is beschikbaar op endpoints die conform FHIR
 Stu3 werken. Het LSP maakt, waar nodig, conversies naar andere standaarden voor
 de op haar aangesloten zorgaanbieder.
+
+## Gap huidig met eindsituatie
+
+De eindsituatie bevat een aantal onderdelen die nog niet gerealiseerd zijn. Deze
+sectie beschrijft per onderdeel wat er mist / aangevuld moet worden.
+
+### NVI
+
+De NVI bestaat op dit moment zowel in concept als in een basis implementatie.
+Deze basis implementatie mist nog volwaardige autorisatie. Dit is nodig in de
+pilot fase. In een PoC zou dit (ten dele) weggelaten kunnen worden.
+
+### Adressering
+
+Voor adressering is een er een referentie implementatie van IHE mCSD. De
+referentie implementatie kan gebruikt worden voor het beschikbaar maken van de
+endpoints. De huidige versie mist authenticatie functionaliteit. Dit is voor een
+PoC niet blokkerend.
+
+### Dezi
+
+Op het moment van schrijven heeft Dezi nog geen mogelijkheid tot het
+ondersteunen van authenticatie over meerdere systemen heen. Hiermee wordt
+bedoelt dat een zorgverlener bij zorgaanbieder in haar ECD authenticeert en dat
+dit ECD vervolgens de authenticatie kan "doorsturen" naar een bron-systeem voor
+bevraging van medischegegevens. Zowel de technische specificatie als een (demo)
+oplossing is nodig om een PoC uit te kunnen voeren. Ook moeten de binnen de Nuts
+en LSP gebruikte systemen voor de PoC en pilot aangepast worden om dit
+mechanisme te ondersteunen.
+
+### LSP en Nuts connectiviteit
+
+Het ontwerp gaat uit van het uitbreiden van de het LSP met functionaliteit om
+Nuts te kunnen bevragen en bevraagd te worden door Nuts nodes. Hiervoor dienen
+de authenticatie gegevens (Dezi en zorgaanbieder) volgens de Nuts wijze
+verstuurd en ontvangen te worden. Ook zullen deze, binnen het LSP, vertaald
+moeten worden naar het LSP eigen formaat. Er is in dit project voorzien in de
+ontwikkeling van een koppelpunt wat deze functies levert.
+
+## Verantwoordelijkheden
+
+De binnen de PoC geïdentificeerde gaps (te realiseren functies) zullen
+gezamenlijk (VWS, VZVZ, Nuts) ingevuld worden. Per onderdeel is de
+hoofdverantwoordelijke:
+
+- VWS
+  - NVI
+  - Adressering
+  - Dezi
+- VZVZ
+  - LSP Nuts connectiviteit
+  - Dezi aansluiting
+- Nuts
+  - Dezi aansluiting
 
 ## Architectuur principes
 
@@ -269,7 +330,16 @@ plaatsvinden.
 
 ### Uitbreiding Dezi
 
-... Credentials ...
+Een van de vereisten bij het leveren van medischegegevens aan een zorgverlener
+van een andere organisatie is informatie over die persoon. Dit gaat dan om zaken
+als het BIG nummer en de rol code.
+
+Om dit mogelijk te maken voor een uitwisseling tussen LSP en Nuts moet deze
+informatie op een betrouwbare wijze gedeeld kunnen worden. Het plan is om
+hiervoor een uitbreiding te realiseren in Dezi. De aanname is dat er een
+oplossing is waar draagvlak voor is bij het CIBG. Ook gaat dit project er vanuit
+dat er tijdens de PoC een stub (namaak) versie van Dezi gebruikt kan worden die
+deze functie heeft.
 
 ### Veilig netwerk
 
@@ -283,14 +353,9 @@ Netwerk (LDN) project gewerkt aan een zorg brede richtlijn. Binnen dit project
 wordt de aanname gedaan dat de uitkomsten hiervan geen negatieve invloed op de
 keuzes binnen het project hebben.
 
-> **Note:** Voordat VZVZ een productie pilot kan doen moet het vraagstuk rondom
-> het veilige netwerk opgelost zijn. Bij de PoC is het reguliere internet nog
-> acceptabel. Bij een pilot moet de oplossing voldoen aan de wetgeving. VZVZ stelt
-> dat dit betekent dat er eisen gesteld moeten worden aan de netwerkleverancier
-> (waaronder de NEN7512 eis dat de communicatie binnen de EER moet blijven). Met
-> publiek internet kan die garantie niet gegeven worden. Of LDN komt met een
-> alternatief voor GZN dat aan alle wet- en regelgeving voldoet of er is -ook voor
-> de pilot- een blokkade.
+Voor de PoC wordt gewerkt met het publieke internet. De aanname is dat _voor_
+aanvang van de pilot, buiten dit project om, besloten is hoe te voldoen aan de
+eisen op een wijze die voor de LSP en Nuts gebruikers werkzaam is.
 
 ### Toestemming
 
@@ -301,7 +366,10 @@ niet kan bepalen of de toegang geautoriseerd kan worden. In de PoC fase kan
 hiervoor een stub ingezet worden. Bij pilot zal hiervoor een aansluiting op Mitz
 nodig zijn.
 
-#### Logging?
+### Logging
+
+Voor logging zijn in dit project geen extra eisen ten opzichte van de huidige
+situatie.
 
 ### Standaarden voor wallets
 
@@ -340,3 +408,13 @@ kan hierdoor tijdig met aanpassingen in richtlijnen of andere juridische kaders
 gestart worden.
 
 ## Advies en goedkeuring
+
+Dit document wordt aangeboden voor akkoord aan het projectteam LSP x Nuts. In
+het specifiek wordt gevraagd om een akkoord van:
+
+- Opdrachtgever vanuit VWS
+- Project leider VZVZ
+- Project leider Nuts
+
+Het advies is om, naast het PoC project, een juridisch traject op te starten om de
+openstaande punten op juridisch vlak te adresseren.
