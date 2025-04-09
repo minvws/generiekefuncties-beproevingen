@@ -178,7 +178,7 @@ Applicaties die gebruik maken van Nuts hebben eigen autorisatie logica die gebru
 
 #### Lokalisatie
 
-Er zijn twee wijzen waarop binnen Nut gelokaliseerd wordt.
+Er zijn twee wijzen waarop binnen Nuts gelokaliseerd wordt.
 
 1. Voor lokalisatie wordt per instelling een zorgnetwerk geregistreerd. Dit
 vaste netwerk wordt bij lokalisatie bevraagd op beschikbaarheid van gegevens.
@@ -226,18 +226,17 @@ UZI register tot stand komt. Het LSP valideert dit vervolgens. Systemen die op
 het LSP aangesloten zijn vertrouwen het LSP en zullen daarom geen additionele
 verificatie te doen.
 
-Voor de communicatie vanuit de MSZ naar de VVT zal de MSZ applicatie een
-verifiable credential maken?
-
 ### Autorisatie
+Het LSP autoriseert binnenkomende en uitgaande verzoeken op basis van het afgesproken autorisatieprotocol. Voor de meeste gegevensuitwisselingen die nu op AORTA draaien is een autorisatie op basis van UZI-rolcode afgesproken.
 
+### Toestemming
 Bij de op het LSP aangesloten zorgaanbieder zal op de huidige wijze bepaald
-worden of er expliciete toestemming verleend is.
+worden of er expliciete toestemming verleend is. Dit gebeurt nu nog lokaal bij het bronsysteem, maar verschillende partijen migreren komende tijd de toestemmingen naar Mitz.
 
 ### Lokalisatie
 
 In de eindsituatie zal er gewerkt worden volgens de Generieke Functie
-lokalisatie. Hierbij wordt de NVI ingezet.
+lokalisatie. Hierbij wordt de NVI ingezet. 
 
 ### Adressering
 
@@ -248,7 +247,7 @@ bron ingebouwd worden in de Nuts node?
 
 ### Logging
 
-Het LSP logt op de wijze die het nu al doet bij aanvragen van VVT naar MSZ. Voor
+Het LSP logt op de wijze die het nu al doet in voor het AORTA-afsprakenstelsel. Voor
 vragen in de andere richting (LSP naar Nuts) zal dit werken op de wijze zoals
 dit nu ook gebeurd bij Nuts-Nuts bevragingen.
 
@@ -256,9 +255,9 @@ dit nu ook gebeurd bij Nuts-Nuts bevragingen.
 
 Het LSP draagt zorg voor de conversie van standaarden bij bevraging van VVT naar
 MSZ. De Nuts omgeving kan gebruik maken van FHIR R3 voor het opvragen van
-gegevens. De data vanuit de VVT is beschikbaar op endpoints die conform FHIR
+medicatiegegevens. De data vanuit de VVT is beschikbaar op endpoints die conform FHIR
 Stu3 werken. Het LSP maakt, waar nodig, conversies naar andere standaarden voor
-de op haar aangesloten zorgaanbieder.
+de op haar aangesloten zorgaanbieder. Voor medicatiegegeven gebruiken de meeste bronsystemen nu nog HL7v3.
 
 ## Gap huidig met eindsituatie
 
@@ -272,11 +271,12 @@ Deze basis implementatie mist nog volwaardige autorisatie. Dit is nodig in de
 pilot fase. In een PoC zou dit (ten dele) weggelaten kunnen worden.
 
 ### Adressering
-
 Voor adressering is een er een referentie implementatie van IHE mCSD. De
 referentie implementatie kan gebruikt worden voor het beschikbaar maken van de
 endpoints. De huidige versie mist authenticatie functionaliteit. Dit is voor een
 PoC niet blokkerend.
+
+De ontwikkeling van het ZORG-AB naar de landelijke afspraken voor adressering is een apart traject dat loopt.
 
 ### Dezi
 
@@ -289,14 +289,21 @@ oplossing is nodig om een PoC uit te kunnen voeren. Ook moeten de binnen de Nuts
 en LSP gebruikte systemen voor de PoC en pilot aangepast worden om dit
 mechanisme te ondersteunen.
 
+Het authenticeren van gebruikers via Dezi is een pilot op zich. Het migratietraject dat hierbij hoort kan jaren duren. In de tussentijd zal ook de huidige situtatie ondersteund moeten worden. Dat wil zeggen dat authenitcatie bewijzen (SAML2 of JWT) getekend met een UZI-pas zullen ook door Nuts-bronnen geaccepteerd moeten worden. Als een Nuts-organisatie een zorgverlener op het LSP wil authenticeren zijn er twee mogelijkheden (evt te combineren):
+- VZVZ zet het de gedane zorgverlenerauthenticatie door het LSP om in een (VC) formaat dat het Nuts-netwerk technisch accepteert en tekent dat zelf. Het Nuts netwerk vertrouwt VZVZ dat het LSP de authenticatie goed uitvoert. Praktisch is dit wel, maar juridisch ligt dit misschien lastig omdat het LSP deze authenticatie eigenlijk namens de bron doet. Dit werkt in het AORTA-afsprakenstelsel, maar mogelijk niet met een Nuts-deelnemer waar VZVZ geen enkele afspraak mee heeft gemaakt.
+- VZVZ zet het authenticatiebewijs (nu een SAML2 of JWT token) door naar het Nuts netwerk zodat daar zelf gecontroleerd kan worden dat de verzendende zorgaanbieder dit cryptografisch heeft ondertekend.
+
 ### LSP en Nuts connectiviteit
 
 Het ontwerp gaat uit van het uitbreiden van de het LSP met functionaliteit om
 Nuts te kunnen bevragen en bevraagd te worden door Nuts nodes. Hiervoor dienen
 de authenticatie gegevens (Dezi en zorgaanbieder) volgens de Nuts wijze
 verstuurd en ontvangen te worden. Ook zullen deze, binnen het LSP, vertaald
-moeten worden naar het LSP eigen formaat. Er is in dit project voorzien in de
-ontwikkeling van een koppelpunt wat deze functies levert.
+moeten worden naar het LSP eigen formaat. 
+
+Voor de communicatie vanuit de eerste lijn (via het LSP) naar de VVT zal de betreffende zorgaanbieder ook iets aan moeten bieden om zichzelf te authenticeren. In het AORTA-afsprakenstelsel gebeurt dat nu o.b.v. het aanbieden van het UZI-servercertificaat waar de TLS-verbinding mee wordt opgezet en door het ondertekenen van een transactietoken. Er zijn geen plannen om deze manier van werken te veranderen en het migreren naar een methode waarin VC's gebruikt zal vermoedelijk jaren in beslag gaan nemen. Als een Nuts-organisatie een zorgaanbieder op het LSP wil authenticeren zijn er twee mogelijkheden (evt te combineren):
+- VZVZ zet het de gedane zorgaanbiederauthenticatie door het LSP om in een (VC) formaat dat het Nuts-netwerk technisch accepteert en tekent dat zelf. Het Nuts netwerk vertrouwt VZVZ dat het LSP de authenticatie goed uitvoert. Praktisch is dit wel, maar juridisch ligt dit misschien lastig omdat het LSP deze authenticatie eigenlijk namens de bron doet. Dit werkt in het AORTA-afsprakenstelsel, maar mogelijk niet met een Nuts-deelnemer waar VZVZ geen enkele afspraak mee heeft gemaakt.
+- VZVZ zet het authenticatiebewijs (nu een SAML2 token) door naar het Nuts netwerk zodat daar zelf gecontroleerd kan worden dat de verzendende zorgaanbieder dit cryptografisch heeft ondertekend.
 
 ## Verantwoordelijkheden
 
@@ -377,6 +384,8 @@ Binnen dit project zal gewerkt worden met wallets voor het verwerken van
 (toegangs)bewijzen (credentials). Voor de PoC zal gekozen worden voor danwel
 bestaande oplossingen binnen Nuts, danwel oplossingen die voldoen aan de EIDAS
 richtlijnen die nu in ontwikkeling zijn.
+
+Voor een raadpleging vanuit AORTA naar Nuts biedt bovenstaande geen oplossing (zie authenticatie).
 
 ### Autorisatie richtlijnen
 
