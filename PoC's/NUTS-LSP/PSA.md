@@ -128,7 +128,7 @@ Lokalisatie van gegevens hangt nauw samen met toestemming.
   alleen met toestemming de verwijsindex _van_ het LSP gevuld met
   lokalisatiemetadata
 
-- In het geval de brosdossierhouder de toestemmingen in Mitz beheert wordt
+- In het geval de brondossierhouder de toestemmingen in Mitz beheert wordt
   altijd het actualiteitenregister _in_ het LSP met lokalisatiemetadata gevuld,
   maar wordt dit pas vrijgegeven als Mitz hiervoor een toestemming heeft
   afgegeven.
