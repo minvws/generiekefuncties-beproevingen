@@ -1,161 +1,483 @@
-# PSA PoC NUTS-LSP
-[beproeving medicatieoverdracht VVT-1e lijn (NUTS-LSP)]
+# LSP x Nuts met GF
 
-# Voorwoord
-Dit document beschrijft de visie en realisatiemogelijkheden van NUTS, TWIIN, VZVZ en VWS op de invoering van een medicatiegegevens-uitwisseling als onderdeel van het landelijk vertrouwensstelsel van waarborgen voor landelijke gegevensuitwisseling.
-Het tijdig kunnen beschikken over actuele medicatiegegevens biedt meerwaarde voor zorgverlener en patiënt doordat er invulling kan worden gegeven aan hun informatiebehoefte. Op dit moment kunnen medicatiegegevens niet gestructureerd en structureel worden uitgewisseld tussen VVT en 1e lijn.
-Dit document dient: 
+## Introductie project
 
-- als praatstuk om ervoor te zorgen dat we in gezamenlijkheid de beste oplossing kunnen vaststellen en om te borgen dat de verschillende stakeholders allen dezelfde stip op de horizon voor ogen krijgen. 
+Binnen de zorg wordt tussen verschillende soorten zorgaanbieders data
+uitgewisseld. Zo is er het Landelijk Schakel Punt (LSP) wat gebruikt wordt voor
+bijvoorbeeld uitwisseling van medicatie gegevens tussen ziekenhuizen, apotheken
+en huisartsen. Ook is er de Nuts infrastructuur die bijvoorbeeld veel gebruikt
+wordt in de verpleeg-, verzorgingshuizen en thuiszorg. Doordat niet alle
+zorgaanbieders op het LSP dan wel op Nuts zijn aangesloten is het niet mogelijk
+gegevens uit te wisselen tussen alle zorgaanbieders in Nederland.
 
-- om te bepalen welke GAPS dan wel OVERLAPS er tussen huidige situatie en gewenste/toekomstige situatie zijn om te kunnen bepalen welke acties er nodig zijn om in lijn met de doelstellingen voor eind 2025 te komen. 
+Om brede uitwisseling in de zorg mogelijk te maken zijn er vier opties:
 
-# Inleiding
-## Begrippen
-Stub:
- Een stub is een simulatieprogramma dat een programma/software vervangt, inclusief de bijbehorende in- en uitvoerstromen, en wordt aangeroepen door het te testen object.
- Het is niet de uiteindelijke software maar een simulatie daarvan om delen van de functionaliteit in complexere ketens (met ketenafhankelijkheden) te kunnen testen zonder dat     alle benodigde functies er al zijn. 
- Stubs emuleren een functie die wordt aangeroepen.
-Driver:
-  Een driver is een simulatieprogramma dat een programma/software vervangt, inclusief de bijbehorende in- en uitvoerstromen, en roept een te testen object aan.
-  Het is niet de uiteindelijke software maar een simulatie daarvan om delen van de functionaliteit in complexere ketens (met ketenafhankelijkheden) te kunnen testen zonder dat     alle benodigde functies er al zijn. 
-  Drivers emuleren een aanroep van een functie.
-Verifieerbare verklaring:
- een  claim/statement of (meta)data die middels cryptografische technieken onweerlegbaar is gemaakt, waarvan cryptografisch te bewijzen is wie deze heeft uitgegeven en waarvan    de integriteit cryptografisch is gewaarborgd.
-## Werkwijze
-Tijdlijnen behoren niet in een PSA. We kiezen voor een agile aanpak. Beginnen met stubs/drivers (tijdelijke componenten die het gedrag nabootsen) die we langzaam gaan vervangen voor werkelijke functionaliteit zodat het een lerende uitrol wordt. Per stap maken we een nieuwe transitie architectuur. On de fly zullen we bepalen wat wel/niet stubben. We beginnen fullstub en gaan dan invullen met bestaande dan wel te ontwikkelen producten  die we in het window voor de beproeving kunnen invullen. 
+1. Alle zorgaanbieders sluiten direct aan op het LSP
 
-## Aanleiding
-De wens van VVT-instellingen en Actiz, eerste lijnszorgaanbieders, VZVZ, Nictiz en VWS om medicatiegegevens uit te kunnen wisselen. Deze PSA beschrijft welke wijzigingen nodig zijn om,  in het kader van de zorgtoepassing Medicatieoverdacht (MO), LSP en Nuts te verbinden, waarbij de implementatie van de generieke functies in lijn met het Landelijk Vertrouwens Stelsel (LVS) worden toegepast.
+2. Alle zorgaanbieders leveren een Nuts connectie
 
-## Stakeholders
-Stakeholders binnen dit project zijn: 
-- Burgers (patiënten/cliënten)
-- Zorgverleners
-- Zorgaanbieders
-- Koepels
-- Leveranciers en beheerders
-- NUTS
+3. LSP en Nuts met elkaar verbinden met gebruik making van Generiek Functies
+
+4. Nieuwe infrastructuur opzetten voor het delen van medische gegevens
+
+Binnen dit project is gekozen voor optie 3 om uitwisseling mogelijk te maken.
+Dit zal gedaan worden door gebruik te maken van de componenten uit de Generieke
+Functies.
+
+Uiteindelijk zijn zorgverleners zijn de beoogde gebruikers van de oplossing. 
+Het doel van dit project is om de Generieke Functies te kunnen beproeven voor 
+het realiseren van de koppeling tussen het LSP en Nuts.
+
+## Context en scope
+
+Dit project beoogd het LSP (VZVZ), Nuts (Nuts community) en de voor de Generieke
+Functies (VWS en community) ontwikkelde modules in een beproeving aan elkaar te
+verbinden. Ook
+vraagt het aanpassingen in de zorgaanbieders gebruikte informatie systemen (XIS
+etc.).
+
+Bij uitwisseling tussen zorgaanbieders op LSP en Nuts zijn twee richtingen
+mogelijk:
+
+1. Nuts vraagt informatie op bij LSP
+
+2. LSP vraagt informatie op bij Nuts
+
+Beide uitwisselrichtingen zijn in-scope. Voor de eerste wordt het actueel
+medicatie overzicht als casus gebruikt. Hierbij kan een, volgens de autorisatie
+richtlijnen geauthenticeerde, arts in via de Nuts node welke verbonden is met
+het LSP een overzicht krijgen van de voorgeschreven medicatie.
+
+Het twee scenario heeft nog geen concrete casus. Hierbij wordt in de PoC gewerkt
+met het ophalen van de Patient resource aangevuld met de Observervation
+resource. Dit is puur een demonstratie van technische werking en mogelijkheden.
+
+## Architectuur samenvatting
+
+Deze PSA is opgesteld door het project team. Dit zijn VWS met iRealisatie 
+als technische ondersteuning, VZVZ
+voor LSP en Nuts. Daarnaast is dit PSA ook bedoelt voor de stakeholders: beleid
+bij VWS, IT leveranciers en juridische ondersteuning.
+
+De oplossing maakt nieuwe functies beschikbaar voor zorgverleners. Hiervoor
+moeten wel aanpassingen gemaakt worden in de technische laag voor identificatie
+en authenticatie, lokalisatie, autorisatie en adressering. Voor de aan AORTA
+deelnemende zorgaanbieder en -leveranciers is het uitgangspunt dat deze beperkte
+aanpassingen zullen gaan doen voor deze PoC. Waar mogelijk zullen benodigde
+wijzigingen voor de aansluiting op de Generieke Functies via het LSP gedaan worden.
+
+Het project heeft als doel technisch oplossingen te ontwikkelen en beproeven in 
+een PoC. De PoC richt zich op de technische realisatie van de 
+uitwisselmogelijkheid. De juridische grondslagen en andere voorwaardelijke 
+onderdelen voor een pilot fase zijn buiten scope van dit project.
+
+## Huidige situatie
+
+In de huidige situatie zijn het LSP en Nuts twee gescheiden omgevingen. Elk
+hebben hun eigen oplossingen voor identificatie & authenticatie (I&A),
+autorisatie (controle op toestemming), lokalisatie, adressering, logging en bij
+LSP conversie van standaarden.
+
+### LSP
+
+#### I&A
+
+##### XIS
+
+Het LSP houdt in haar applicatieregister bij welke XIS’en gevalideerd zijn voor
+welke gegevensuitwisselingen (welke versies van berichten gestuurd en ontvangen
+mogen/kunnen worden). Hiervoor dient een XIS bij Nictiz een kwalificatie voor
+een bepaalde zorgtoepassing te hebben behaald en door VZVZ geaccepteerd zijn
+voor de invulling van de generieke functies zoals ingevuld voor AORTA.
+
+##### Zorgaanbieder
+
+Identificatie van de zorgaanbieder gebeurt op basis van het
+UZI-registerabonneenummer (URA). Authenticatie daarvan geschiedt via het
+opzetten van de TLS-verbinding met het UZI-servercertificaat en (nieuw) het
+signen van de transactie met datzelfde UZI-servercertificaat.
+
+#### I&A zorgverlener
+
+Identificatie van de zorgverlener gebeurt op basis van het Unieke Zorgverlener
+Identificatie (UZI)-nummer. Authenticatie hiervan geschiedt op het hoogste
+betrouwbaarheidsniveau (eIDAS hoog) op basis van gesignde SAML2-tokens van de
+UZI-pas. Hierbij zijn er twee opties:
+
+1. De gebruiker signet de transactie met de eigen UZI-pas (al dan niet onder
+   mandaat van een arts).
+
+2. De uiteindelijk verantwoordelijke arts heeft een zogenaamd mandaattoken
+   getekend. Hiermee kan het systeem (icm een transactietoken en een
+   inschrijftoken) gegevens kan raadplegen.
+
+### Autorisatie
+
+Het LSP autoriseert binnenkomende en uitgaande verzoeken op basis van het
+afgesproken autorisatieprotocol. Voor de meeste gegevensuitwisselingen die nu op
+AORTA draaien is een autorisatie op basis van UZI-rolcode afgesproken.
+
+De zorgkoepels, die
+over de autorisatieregels gaan, hebben gesteld dat alleen een beperkte set van
+BIG-rollen geautoriseerd is om medicatiegegevens te raadplegen/versturen (aan de
+hand van de UZI-rolcodes). Daarom wordt binnen dit project enkel met deze rollen
+gewerkt.
+
+### Lokalisatie
+
+Lokalisatie van gegevens hangt nauw samen met toestemming.
+
+- In het geval een brondossierhouder de toestemmingen in het XIS beheerd wordt
+  alleen met toestemming de verwijsindex _van_ het LSP gevuld met
+  lokalisatiemetadata
+
+- In het geval de brondossierhouder de toestemmingen in Mitz beheert wordt
+  altijd het actualiteitenregister _in_ het LSP met lokalisatiemetadata gevuld,
+  maar wordt dit pas vrijgegeven als Mitz hiervoor een toestemming heeft
+  afgegeven.
+
+### Adressering
+
+Als het LSP zelf een applicatie moet adresseren geschiedt dit door het al
+genoemde interne applicatieregister te raadplegen. Als een zorgverlener een
+andere zorgverlener zoekt/wil adresseren gebruikt met hiervoor het ZORG-AB
+adresboek (waarin ook een kopie zit van het applicatieregister).
+
+### Logging
+
+Zowel agerend als reagerend XIS en het LSP houden allemaal een log bij
+
+### Conversie van standaarden (FHIR)
+
+Het LSP beschikt over een berichten transformatiedienst die HL7v3 berichten kan
+omzetten naar HL7 FHIR en vice versa op basis van door Nictiz aangeleverde XSLT
+vertaal algoritmes.
+
+### Nuts
+
+#### I&A
+
+##### Zorgaanbieder
+
+Nuts maakt voor verificatie van zorgaanbieders gebruik van verifiable
+credentials. De wijze waarop deze gemaakt worden is via een UZI-server
+certificaat.
+
+##### Authenticeren zorgverlener
+
+Binnen Nuts wordt er gewerkt met verifiable credentials voor het authenticeren van
+de zorgverlener. Nuts kent drie wijzen van het authenticeren van zorgverleners:
+
+1. Zorgverleners met een UZI-pas kunnen ZorgID gebruiken voor het maken van een credential.
+2. Voor zorgverleners zonder persoonslijke (UZI) authenticatie middelen wordt gebruik
+   gemaakt van de door de zorgaanbieder uitgegeven credentials
+   (NutsEmployeeCredential).
+3. Zorgverleners kunnen persoonlijk authenticeren via de Yivi app en hun bank.
+   Dit levert enkel gegevens op over de persoon (niet dat dit een zorgverlener
+   is).
+
+#### Autorisatie
+
+Applicaties die gebruik maken van Nuts hebben eigen autorisatie logica die
+gebruik maakt van de eerder genoemde credentials.
+
+#### Lokalisatie
+
+Er zijn twee wijzen waarop binnen Nuts gelokaliseerd wordt.
+
+1. Voor lokalisatie wordt per instelling een zorgnetwerk geregistreerd. Dit
+vaste netwerk wordt bij lokalisatie bevraagd op beschikbaarheid van gegevens.
+
+2. Een shared care plan kan gebruikt worden om samenwerkende organisaties te
+   bepalen. Deze kunnen daarmee bevraagd worden bij lokalisatie.
+
+#### Adressering
+
+Raadplegers kunnen op 2 manieren de technische adressen van bronhouders vinden:
+
+1. Via een per toepassing in te richten "discovery" dienst. Deze dienst wordt vervolgens gebruikt door de deelnemers van de toepassing.
+2. Via het gedistribueerde Nuts-netwerk. Deze optie wordt uitgefaseerd.
+
+#### Logging
+
+Logging vindt plaats bij de bronhouders en is buiten scope van Nuts.
+
+#### Conversie van standaarden (FHIR)
+
+Het bieden van endpoints zoals FHIR is buiten scope van Nuts. Dit wordt ingevuld
+door de toepassingen die gebruik maken van de Nuts node(s). Binnen de Nuts
+gebruikers wordt daarom per toepassing afgesproken welke standaarden hiervoor te
+hanteren.
+
+## Eindresultaat
+
+In dit hoofdstuk wordt het beoogde eindresultaat beschreven.
+
+### Plateau 1: PoC
+
+#### I&A
+
+##### Authenticeren zorgverlener
+
+Voor het authenticeren van de zorgverlener zal gewerkt worden met Dezi die de
+Generieke Functie Identificatie en Authenticatie invult. Op basis van door Dezi
+uitgeven attesten kunnen de communicerende partijen elkaar op het juiste
+betrouwbaarheidsniveau authenticeren. Binnen de PoC zal gewerkt worden met een
+stub-implementatie van Dezi of een alternatieve (tijdelijke) oplossing voor
+authenticatie.
+
+##### Authenticeren zorgaanbieder
+
+Het authenticeren van de zorgaanbieder zal vanuit Nuts naar het LSP gaan op basis
+van een verifiable credential wat (evt. indirect via een certificaat) via het
+UZI register tot stand komt. Het LSP valideert dit vervolgens. Systemen die op
+het LSP aangesloten zijn vertrouwen het LSP en zullen daarom geen additionele
+verificatie doen.
+
+Voor de communicatie vanuit het LSP naar Nuts zal de vragende zorgaanbieder een
+verifiable credential gebruiken. Dit kan het LSP doorsturen naar de Nuts node
+van de bron houder. Het credential zal "handmatig" opgebouwd worden via het
+UZI-servercertificaat of een andere oplossing (zie hoofdstuk 
+"Gap huidige met eindresultaat").
+
+### Toestemming
+
+Bij de op het LSP aangesloten zorgaanbieder zal op de huidige wijze bepaald
+worden of er expliciete toestemming verleend is. Dit gebeurt lokaal bij 
+het bronsysteem.
+
+#### Lokalisatie
+
+In de eindsituatie zal er gewerkt worden volgens de Generieke Functie
+lokalisatie. Hierbij wordt gewerkt met een lokalisatie index op basis van de in
+de lokalisatie werkgroep uitgewerkte opzet. Deze index wordt ook wel de
+Nationale Verwijs Index (NVI) genoemd. In de PoC wordt hiervoor gewerkt met een
+referentie implementatie.
+
+#### Adressering
+
+Voor adressering zal in gebruik gemaakt worden van de Generieke Functie
+Adressering. Hierbij zal er een IHE mCSD Directory worden ingericht met de
+endpoint gegevens van de in de PoC betrokken systemen. Hierbij wordt nog niet
+gewerkt met registratie via het LRZa.
+
+#### Logging
+
+Het LSP logt op de wijze die het nu al doet in voor het AORTA-afsprakenstelsel. Voor
+vragen in de andere richting (LSP naar Nuts) zal dit werken op de wijze zoals
+dit nu ook gebeurd bij Nuts-Nuts bevragingen.
+
+#### Conversie van standaarden (FHIR)
+
+Het LSP draagt zorg voor de conversie van standaarden bij bevraging van VVT naar
+MSZ. De Nuts omgeving kan gebruik maken van FHIR R3 voor het opvragen van
+medicatiegegevens. De data vanuit de VVT is beschikbaar op endpoints die conform
+FHIR Stu3 werken. Het LSP maakt, waar nodig, conversies naar andere standaarden
+voor de op haar aangesloten zorgaanbieder. Voor medicatiegegevens gebruiken de
+meeste bronsystemen nu nog HL7v3.
+
+## Gap huidig met eindresultaat
+
+Het eindresultaat bevat een aantal onderdelen die nog niet gerealiseerd zijn. Deze
+sectie beschrijft per onderdeel wat er mist / aangevuld moet worden.
+
+### NVI
+
+De NVI bestaat op dit moment zowel in concept als in een basis implementatie.
+Deze basis implementatie mist nog volwaardige autorisatie. In een PoC zou dit
+(ten dele) weggelaten kunnen worden. Het is echter wel gewenst om een 
+(beperkte) vorm van authenticatie te hebben.
+
+### Adressering
+
+Voor adressering is een er een referentie implementatie van IHE mCSD. De
+referentie implementatie kan gebruikt worden voor het beschikbaar maken van de
+endpoints. De huidige versie mist authenticatie functionaliteit. Dit is voor een
+PoC niet blokkerend.
+
+### Dezi
+
+Op het moment van schrijven heeft Dezi nog geen mogelijkheid tot het
+ondersteunen van authenticatie over meerdere systemen heen. Hiermee wordt
+bedoelt dat een zorgverlener bij zorgaanbieder in haar ECD inlogt en dat
+dit ECD vervolgens de authenticatie kan "doorsturen" naar een bron-systeem voor
+bevraging van medische gegevens. Zowel de technische specificatie als een (demo)
+oplossing is nodig om een PoC uit te kunnen voeren. Ook moeten de binnen de Nuts
+en LSP gebruikte systemen voor de PoC aangepast worden om dit
+mechanisme te ondersteunen.
+
+Afhankelijk van de keuzes binnen de GF I&A en de bijbehorende impact kan voor 
+de PoC gekozen worden voor een tussentijdse oplossing voor het authenticatie
+vraagstuk. Twee mogelijke routes zijn:
+
+- Het LSP zet het de gedane zorgverlenerauthenticatie door het LSP om in een (VC)
+  formaat. Het Nuts-netwerk dient dan het LSP als uitgever te vertrouwen.
+- Het LSP stuurt authenticatiebewijs (SAML2/ JWT token) door naar het Nuts 
+  netwerk. De ontvangende Nuts node gecontroleerd dit zelf.
+
+Het kan zijn dat de hierboven geschetste alternatieven voor Dezi tegen juridische
+obstakels lopen wanneer deze voor een pilot/productie fase ingezet moeten worden.
+Binnen dit project is dat vraagstuk buiten scope.
+
+Naast deze routes is het mogelijk dat binnen de PoC nog andere oplossingen bedacht 
+worden voor de authenticatie vraag.
+
+### LSP en Nuts I&A
+
+Het ontwerp gaat uit van het uitbreiden van de het LSP met functionaliteit om
+Nuts te kunnen bevragen en bevraagd te worden door Nuts nodes. Hiervoor dienen
+de authenticatie gegevens (Dezi en zorgaanbieder) volgens de Nuts wijze
+verstuurd en ontvangen te worden. Ook zullen deze, binnen het LSP, vertaald
+moeten worden naar het LSP eigen formaat.
+
+Voor de communicatie vanuit de eerste lijn (via het LSP) naar de VVT zal de 
+betreffende zorgaanbieder zichzelf moeten authenticeren. In het 
+AORTA-afsprakenstelsel gebeurt dat nu o.b.v. het aanbieden van het 
+UZI-servercertificaat waar de TLS-verbinding mee wordt opgezet en door het
+ondertekenen van een transactietoken. 
+
+Voor authenticatie vanuit LSP naar Nuts zijn er de volgende mogelijkheden:
+
+1. De op LSP aangesloten systemen gaan VC's gebruiken voor authenticatie
+   (significante change voor ECD's).
+2. Het LSP zet de zorgaanbiederauthenticatie om in een (VC) formaat. De
+   ontvangende Nuts node dient dan het LSP als uitgever te vertrouwen.
+3. Het LSP stuurt het authenticatiebewijs (nu een SAML2 token) door naar
+   de Nuts node. Deze kan dan dan controleren of dit klopt.
+
+## Verantwoordelijkheden
+
+De binnen de PoC geïdentificeerde gaps (te realiseren functies) zullen
+gezamenlijk (VWS, VZVZ, Nuts) ingevuld worden. Per onderdeel is de
+hoofdverantwoordelijke:
+
+- VWS
+  - NVI
+  - Adressering
+  - Dezi
 - VZVZ
-- VWS:
--   Programma Landelijk Vertrouwensstelsel (LVS)
--   Programma Generieke Functies (GF)
--   Programma Landelijk Dekkend Netwerk (LDN)
+  - LSP Nuts connectiviteit
+  - Dezi aansluiting
+- Nuts
+  - Dezi aansluiting
 
-## Doelstelling
-Er is in een Proof of Concept omgeving met een koppeling tussen een aantal stub NUTS nodes (vertegenwoordigd per node één VVT-instelling) die medicatiegegevens kan uitwisselen met op de LSP-testomgeving aangesloten bronnen.  Hierin worden twee stappen onderscheiden: De eerste stap is één VVT-instelling (stub) die AMO gegevens kan opvragen van één BSN bij meerdere LSP testbronnen. De tweede stap is één LSP-testbron die AMO gegevens van één BSN kan ophalen bij meerdere VVT-instellingen (stubs). De tweede stap zal vermoedelijk de meeste PoC ervaring opleveren. Daarbij worden ook de uitgangspunten/inrichtingskeuzes van de generieke functies meegenomen. De opgedane lessen en ervaringen worden bij het programma Twiin ingebracht in een volgende versie van het afsprakenstelsel. De afspraken zullen opgelijnd zijn met het groeipad naar het gebruik van de Generieke Functies volgens het LVS. De  PoC is onderdeel van het concept ‘vooraf vastleggen, meegeven en toetsen van verifieerbare verklaringen voor landelijke medische gegevensuitwisseling’ . 
+## Architectuur principes
 
-## Lijst met aannamen
-Top down ideeën waarvan we vermoeden dat deze gaan werken, maar waarvan we niet 100% zeker (kunnen) zijn, beproeven we bottom-up , om te zien of die aannames correct zijn. De combinatie van deze top-down en bottom-up aanpak leert ons wat hierna te doen. (We weten hoe we kroketten en bitterballen moeten maken maar we weten niet precies hoe heet de olie moet zijn, hoe dik de paneermeellaag en hoe de samenstelling van die paneermeellaag moet zijn.) We zijn er van overtuigd dat we jaren kunnen praten en  documenten kunnen schrijven, maar dat het sneller is om het gewoon te doen, te beproeven en iteratief verbeteringen aan te brengen. Hierom gaan we uit van de volgende aannamen:
+Bij het uitwerken van de oplossing worden de volgende architectuur principes
+gebruikt.
 
-### 0. Trust over IP (ToIP)
-Het vertrouwen willen we inrichten volgens het ToIP-framework met de daarbij behorende lagen. Hierom doen we aannames over de verwachtte ontwikkelingen op elk van deze 4 lagen, in ogenschouw nemende de ontwikkeling van generieke functies, zodat we bepaalde keuzes op basis van die aannames kunnen gaan maken.
+### Beperkte aanpassingen bij LSP deelnemer
 
-### 1. I&A: attributen. 
+Voor de aan LSP AORTA deelnemende zorgaanbieder en -leveranciers is het
+uitgangspunt dat deze beperkte aanpassingen zullen gaan doen voor deze PoC. Dit
+betekent dat aanpassingen, voor zover mogelijk, bij het LSP, Nuts of de
+Generieke Functies zullen plaatsvinden. Hiervan wordt enkel afgeweken wanneer de
+toekomstige visie voor de zorg / Generieke Functies al duidelijk is of dat dit 
+met oog op de beproeving wenselijk is om mee te nemen in de PoC.
 
-We gaan ervan uit dat voor het vullen en beschikbaarstellen van identificatie attributen in een wallet het OpenID4VC protocol wordt gebruikt. Deze aanname loopt vooruit op de nog vrij te geven guidelines eIDAS 2.0 (verwachte Q4 2024). Ook al is de eIDAS 2 verordening met bijbehorende ARF nog niet 100% klaar, we weten op welke ontwikkelingen de wetgeving gebaseerd is. In die zin volgt de wet de ontwikkelingen op wetenschappelijk en praktisch niveau te weten een volgbare evolutie naar attribute bases authentication en cryptografisch verifieerbare attesten. De evolutie in bijbehorende standaarden is, (van oud naar nieuw): SAML, OAuth, OIDC, OpenID4VC. Aanname is dat er eind 2024 ook vanuit eIDAS2/NEN7518/WDO/DIAZ al formele processen, procedures en technische standaarden komen over o.a. uitrol van attributen (QEAA). Een andere aanname is dat er taakcodes (of rolcodes??) komen voor de taken die zorgverleners moeten kunnen uitvoeren (zoals toediener) zonder dat ze direct (bv via diploma) door het CIBG kunnen worden gekwalificeerd. Deze taakcodes zijn, naast de rolcodes, nodig om te kunnen autoriseren.
-In het kort zijn de aannamen:
+## Openstaande punten en aannames
 
-    -We sluiten op termijn aan op de standaarden die vanuit de de Europese ontwikkeling mbt authenticatiemiddelen gebruikt gaan worden en tot die tijd maken we gebruik van de standaarden die vanuit het DEZI-stelsel worden aangeboden. 
-    -We verwachten dat er diverse attributen beschikbaar komen voor zorgverleners zoals bijvoorbeeld taakcodes (of rolcodes) en een zorgidentiteit
-    -We verwachten dat er eind 2025 vanuit eIDAS2/NEN7518/WDO/DIAZ al formele processen en procedures komen (QEAA) over o.a. uitgifte van deze attributen
+### Uitbreiding Dezi
 
+Een van de vereisten bij het leveren van medischegegevens aan een zorgverlener
+van een andere organisatie is informatie over die persoon. Dit gaat dan om zaken
+als het BIG nummer en de rol code.
 
-### 2. Autorisatie
-We gaan er vanuit dat de dossierhouder op raadplegende zorgaanbiedertype en rolcode (fictief voor rol 'toediener') autoriseert en verantwoordelijk is voor Attribute-based access control (ABAC) waarvoor de hard af te dwingen regels/policies in de nieuwe governance zijn vastgesteld en dat de raadpleger de Role Based Access Control (RBAC) verantwoordelijkheid krijgt gebaseerd op een in de nieuwe governance vastgestelde 'pas-toe-of-leg-uit' autorisatieregels. Deze regels zijn aan de raadplegende kant dus minder hard omdat er aan de raadplegende kant van kan worden afgeweken op een voor een auditor uitlegbare manier. Deze aanname loopt vooruit op dialoog in de werkgroep de NEN-7520 norm autorisatie. Redenen hiervoor zijn: complexiteitsreductie, het nu niet herbruikbaar zijn van al uitgegeven autorisaties in andere context en de ontwikkelingen naar het uitwisselen in kleinere datasets (bouwstenen of zelfs data-elementen: databeschikbaarheid). Zorginstellingen kunnen dan op type geautoriseerd worden, mits deze aan allerlei kwaliteitscriteria voldoen (b.v. aantoonbaar NEN-7510 certificaat), andere partijen, die nog niet zo volwassen zijn zullen dan nog op formele zorgverlenerollen geautoriseerd moeten worden omdat ze in dit geval geen NEN-7510 verklaring kunnen overleggen.
+Om dit mogelijk te maken voor een uitwisseling tussen LSP en Nuts moet deze
+informatie op een betrouwbare wijze gedeeld kunnen worden. Het plan is om
+hiervoor een uitbreiding te realiseren in Dezi. De aanname is dat er een
+oplossing is waar draagvlak voor is bij het CIBG. Ook gaat dit project er vanuit
+dat er tijdens de PoC een stub (namaak) versie van Dezi gebruikt kan worden die
+deze functie heeft.
 
-### 3. Twiin/Nuts
-We willen landelijk één plek hebben waar we de geleerde lessen kunnen vastleggen in valideerbare (kwalificeren/accepteren) afspraken. Het Twiin afsprakenstelsel is in het leven geroepen om overbruggende afspraken tussen vertrouwensdomeinen te maken op relatief korte termijn (IZA). De huidige versie van het afsprakenstelsel beschrijft werkende oplossingen, ook voor generieke functies en de geleerde lessen zullen daarom in een toekomstige versie van het afsprakenstelsel moeten landen waarin ook de generieke functies van VWS een plaats krijgen. Het is daarom handig om naast een huidige versie van het afsprakenstelsel parallel ook te werken aan een afsprakenstelsel voor de toekomst, waarin op basis van aannames alvast gewerkt wordt aan nieuwe afspraken en specificaties. Vanuit Twiin zullen de gemaakte afspraken moeten voortvloeien naar het 'afsprakenstelsel' AORTA en Nuts waar de afspraken in moeten worden opgenomen. 
+### Veilig netwerk
 
-### 4. Wallets
-Ook authenticatie met attributen vanuit wallets moet voldoen aan de NEN-7512.
-Aanname: Hierbij dienen Nuts en LSP te vertrouwen op het afsprakenstelsel rondom het gebruik van de digitale wallets.
+Het LSP maakt gebruik van een gesloten netwerk voor communicatie met haar
+deelnemers. Nuts gebruikt hiervoor het reguliere internet. De huidige opzet van
+het per zorgaanbieder afsluiten van een contract om op het gesloten LSP is niet
+gewenst in de VVT sector vanwege de additionele kosten die dit met zich
+meebrengt. Voor nu wordt er daarom uitgegaan van een aansluiting van de VVT via
+het publieke internet. Binnen VWS wordt in het kader van het Landelijk Dekkend
+Netwerk (LDN) project gewerkt aan een zorg brede richtlijn. Binnen dit project
+wordt de aanname gedaan dat de uitkomsten hiervan geen negatieve invloed op de
+keuzes binnen het project hebben.
 
-## Beoogde resultaten
+Voor de PoC wordt gewerkt met het publieke internet. Een definitieve oplossing
+die voldoet aan de juridische en andere eisen met betrekking tot veilig netwerk
+is buiten de scope van deze PoC.
 
-1.	Een volgende meer volwassen versie van deze 'high-level-doelarchitectuur NUTS-LSP' voor  de lange termijn met daarin o.a. plaats voor generieke functies en een te realiseren transitie-architectuur bestaande uit een afsprakenstelsel en Technical Agreement (ondersteund door een Solution Architectural Description (SAD)) voor het verbinden van LSP en NUTS, die invulling geven aan de (functionele) communicatie patronen waarmee (minimaal) de use cases vanuit Medicatieoverdracht gedekt worden.  [Gericht bevragen, ongericht bevragen, verzenden]
-2.	Een herbruikbare open source GtK referentie-implementatie 
-3.	Concept Enrollment proces dat gebruikt kan worden voor de uitrol van attributen in wallets op het juiste betrouwbaarheidsniveau. 
-4.	Conceptafspraken over gebruik taakcodes  (naast rolcode) voor taak: toediener (VVT). Taakcodes zijn essentieel voor de VVT sector, omdat er veel zorgprofessionals werken die niet kunnen worden gekwalificeerd door het CIBG (want geen diploma of opname in register)(er wordt nog gewerkt aan rolcodes voor niet BIG-geregistreerden, daarmee kun je ook de aanname doen dat die rolcodes er gaan komen en daarmee de PoC alleen op rolcode uitvoeren ipv ook met taakcodes, check). Uitgangspunt is dat de koepels met een autorisatierichtlijn komen. Contact met programma MO om te kijken of de conceptafspraken die we maken op basis van de opgedane ervaring kunnen laten landen in de MO governance. Dit kan het programma Generieke Functies verzorgen.
-5.	Een technische PoC zonder daadwerkelijke patiëntgegevens die opschaalbaar is naar pilot (met werkelijke patiëntgegevens).
+### Toestemming
 
-## Het gaat om een beproeving met:
-1.	Authenticatie:
-Drie wallet apps. Twee  zorgverlener wallets en een zorgaanbieder XIS-wallet (wallet-agent). Hiermee kunnen we aantonen dat het niet uitmaakt welke wallet app een ZV kiest. Het gaat hierbij om het idee dat  meerdere wallet apps naast en door elkaar gebruikt kunnen worden (Dit staat nog los vd eisen die eraan moeten worden gesteld). 
-2.	Autorisaties:  
-a. Die uitgegeven worden voor role-based accesscontrol aan de raadplegende kant door de opvragende zorgaanbieder aan zijn zorgprofessionals op basis van een landelijke RBAC autorisatieafspraak.  
-b.	Die dossierhouders in staat stellen gegevens vrij te geven obv een OAuth/OpenID4VP service die accestokens kan uitgeven op basis van landelijke autorisatieafspraak waarbinnen een dossierhouder gegevens vrijgeeft op basis van ABAC (waaronder een attribuut met raadplegende zorgaanbiedertype).    
-3.	Toestemmingen:
-Een Toestemmingsvoorziening (TV) met een PDP (policy decision point) in de OTV danwel in het knooppunt waar toestemmingen kunnen worden gechecked: We gebruiken hiervoor de gesloten autorisatievraag van Mitz (in een testomgeving).
-4.	Lokalisatie:
-Een Lokalisatieregister (LMR) waar obv de toestemming de organisatie-id’s kunnen worden opgehaald van (relevante) dossierhouders voor AMO. 
-5.	Adressering:
-Een AdresBoek (AB) waar de relevante technische endpoint van de organisatie-id’s kunnen worden opgevraagd. Dit zal een –bij gebrek aan een landelijk afsprakenstelsel over adressering- een combinatie/integratie zijn van het Nuts-register aan de ene kant en ZORG-AB/LSP-applicatieregister aan de andere kant.
-6.	Transformatie  
-a. Een seurity token service (STS) die tokens kan omzetten (JWT in SAML).   
-b. Een transformatieservice (TS) die HL7v3 kan omzetten in HL7 FHIR.
+Binnen dit project wordt uitgegaan van de registratie van toestemming bij de
+Generieke Functie Toestemmingen op basis van een Online Toestemmingsvoorziening
+(OTV). Dit is nodig omdat de lokalisatie index (NVI) anders
+niet kan bepalen of de toegang geautoriseerd kan worden. In de PoC fase kan
+hiervoor een stub ingezet worden of worden uitgegaan van toestemming 
+(autorisatie op NVI is dan buiten scope).
 
-## Scope
-### Buiten scope
-Omschrijf hier expliciet wat er buiten de scope van het traject valt. Het gaat hier om die zaken waar twijfel over zou kunnen bestaan.
--	Polymorfe Pseudoniemen
--	Eisen aan wallet app's
--	Eisen aan authenticatiemiddelen om wallets te ontsluiten
--	Autorisatieregels medicatieoverdracht. Autorisatie op basis van rol zoals de huidige autorisatierichtlijn voor medicatieoverdracht is opgesteld en vastgesteld door de koepels.   Voor de niet-BIG-geregistreerde zorgprofessionals in de VVT-sector dient dan een oplossing gevonden te worden (zie taakcode in paragraaf over I&A attributen). Zie eerdere opmerking over rolcodes voor niet BIG-geregistreerden. 
+### Logging
 
+Voor logging zijn in dit project geen extra eisen ten opzichte van de huidige
+situatie.
 
-## Samenhang/afhankelijkheden met andere trajecten
-Project toekomstbestendig maken UZI. Het project toekomst bestendig maken UZI beproeft het plaatsen van UZI-attributen in wallet apps. Deze functionaliteit is nodig voor de POC die we willen uitvoeren.
-MP9
-Programma's GF, LVS en LDN
+### Standaarden voor wallets
 
+Binnen dit project zal gewerkt worden met VCs voor het verwerken van
+(toegangs)bewijzen (credentials). Voor de PoC zal gekozen worden voor danwel
+bestaande oplossingen binnen Nuts, danwel oplossingen die voldoen aan de EIDAS
+richtlijnen die nu in ontwikkeling zijn.
 
-# IST
-De uitdaging is dat er nu twee vertrouwensdomeinen zijn (NUTS en LSP) die beide andere keuzes hebben gemaakt ten aanzien van de juridische, organisatorische en technische onderwerpen uit het  vertrouwensmodel. Vanwege deze in het verleden gemaakte keuzes is er geen interoperabele gegevensuitwisseling mogelijk tussen zorgaanbieders aangesloten op het LSP en zorgaanbieders aangesloten op NUTS.  Op dit moment zijn er per onderwerp uit het vertrouwensmodel verschillende afspraken gemaakt wat heeft geresulteerd in het ontstaan van twee verschillende vertrouwensdomeinen.
+Voor de LSP zijde gelden andere keuzes. Zie hiervoor de eerder beschreven
+punten met betrekking tot authenticatie.
 
-![image](https://github.com/minvws/generiekefuncties-beproevingen/assets/123090714/48348ce2-6cff-46a4-a56d-44d63f60d1d3)
+### Autorisatie richtlijnen
 
-Zowel NUTS als het Landelijk Schakelpunt (LSP) vereisen onweerlegbaarheid bij de uitwisseling van medische gegevens. Hiervoor worden verifieerbare verklaringen (SAML tokens bestaande uit SAML-assertions bij LSP, Verifiable Presentations met daarin Verifiable credentials. VP(VCs) bij NUTS), meegestuurd tijdens de uitwisseling die de betrouwbaarheid van de uitwisseling op het hoogste niveau waarborgen. De LSP tokens (verifieerbare verklaringen) zijn conform de SAML standaard gemaakt en de NUTS VC’s zijn conform de gelijknamige W3C standaard gemaakt. Tevens ’ gebruiken bronsystemen die zijn aangesloten op het LSP (nu nog) vooral HL7v3 als communciatieprotocol, terwijl bronsystemen in de VVT sector gebruik maakt van het HL7 FHIR (versie RX) communicatieprotocol. Medicatieoverdracht wordt o.b.v. HL7 FHIR ontwikkeld. Het LSP en (initieel een beperkt aantal) XIS’en zullen dit ook gaan ondersteunen. In de eersre fase is de PoC voor één richting, dus datastroom van eerste lijn naar VVT en in tweede fase ook andersom.
+Binnen de VVT zijn veel zorgverleners werkzaam die geen BIG registratie hebben.
+Bestaande richtlijnen die van toepassing zijn op de ontsluiting van medische
+gegevens (zoals [die van de
+KNMP](https://www.knmp.nl/richtlijnen/overdracht-van-medicatiegegevens-de-keten))
+eisen echter dat zorgverleners die deze gegevens raadplegen BIG geregistreerd
+zijn. 
 
-## Probleemomschrijving
-In de huidige situatie kunnen geen medicatiegegevens worden opgevraagd/uitgewisseld tussen VVT-instellingen, huisartsen en apothekers. Dit komt omdat de vertrouwensmodellen van de onderliggende “infrastructuren” van elkaar verschillen en andere tokens gebruiken om de onweerlegbaarheid aan de andere partij aan te tonen. Een ander knelpunt is dat  op dit moment de generieke functies onvoldoende zijn ingericht of niet beschikbaar zijn, waardoor de werking van deze generieke functies nog niet in de processen  en programmatuur van de uitwisselingen is vorm  gegeven. Om uitwisseling van gegevens in plateau 1 van de NVS, eind 2025, voor medicatiegegevens mogelijk te maken moeten  deze generieke functies in het proces worden opgenomen.
+De technische PoC zal enkel met fictieve data werken. Hierdoor is het mogelijk
+om van de richtlijnen af te wijken. Binnen dit project zal waar mogelijk in de
+test scenario's gewerkt worden met voorbeelden die binnen de richtlijnen passen.
+Indien dit niet kan (omdat de richtlijn bepaalde communicatie niet toestaat)
+zal dit duidelijk worden aangegeven om verwarring over de inzetbaarheid te
+beperken.
 
+### Onderdelen uit het trust-over-ip model
 
-# Visie op NUTS-LSP uitwisselingen
+Voor dit project zal enkel gewerkt worden aan de Technology aspecten (laag 1 tot
+en met 4) uit het [trust-over-ip model](https://trustoverip.org/toip-model/
+"https://trustoverip.org/toip-model/"). De Governance en Ecosystem onderdelen
+worden buiten dit project opgepakt.
 
-![image](https://github.com/minvws/generiekefuncties-beproevingen/assets/123090714/95c3df45-07f9-4e3b-a217-9aef161a859e)
-Doelarchitectuur NUTS-LSP uitwisselingen
+## Architectuur risico’s
 
-# SOLL
+### Juridisch
 
-## Gewenste situatie op conceptueel niveau
+De uitwisseling van medische gegevens is gebonden aan wetten, richtlijnen en
+andere juridische kaders. Het is mogelijk dat sommige functies of oplossingen
+juridisch grondslagen missen. Binnen deze PoC wordt hier geen activiteit op
+ondernomen. Wel kunnen ontwerpen en implementaties voorgelegd worden ter
+beoordeling op juridische en organisatorische haalbaarheid.
 
-Een belangrijke wens is om Generieke functies zoveel als mogelijk te beproeven gebruik makend van oplossingen die reeds beschikbaar zijn, bijvoorbeeld op het gebied van Identificatie en Authenticatie, danwel componenten uit de doelarchitectuur te stubben.
+### Generieke functies
 
-De gewenste situatie voor de beproeving:
+De specificaties voor de generieke functies zijn nog in ontwikkeling. Voor de
+PoC kan gestart worden met concept versies. Eventuele aanpassingen in
+specificaties kunnen gevolgen hebben voor zowel de Gerieke Functie componenten
+als het LSP, Nuts en de aangesloten XIS systemen.
 
-![image](https://github.com/minvws/generiekefuncties-beproevingen/assets/123090714/783c11af-4cf4-4904-85bd-1ea528ebc48b)
+## Advies en goedkeuring
 
-![image](https://github.com/minvws/generiekefuncties-beproevingen/assets/123090714/0b730a16-6cbb-4c3b-9fbb-ffaaa9f4bc94)
+Dit document wordt aangeboden voor akkoord aan het projectteam LSP x Nuts. In
+het specifiek wordt gevraagd om een akkoord van:
 
-## Afwijkingen t.o.v. de doelarchitectuur LSP-NUTS
-Polymorfe Pseudonimisering wordt niet beproeft. Tevens zijn er nu nog geen NEN-7518 gecertificeerde middelen die we kunnen beproeven maar we kiezen voor MS authenticator en ZORG-ID smart als twee wallets om mee te beproeven.  
+- Opdrachtgever vanuit VWS
+- Project leider VZVZ
+- Project leider Nuts
 
-## Afwijkingen t.o.v. het AORTA vertrouwensmodel
--De authenticatie van zorgverleners zal niet altijd meer plaatsvinden op basis van de huidige UZI-pas (zie ontwikkelingen tav DEZI). 
--De authenticatie van zorgaanbieders zal niet altijd meer plaatsvinden op basis van het UZI-servercertificaat (Zie ontwikkelingen tav DEZI). 
-	Deelnemers aan het AORTA-afsprakenstelsel dienen akkoord te zijn met de wijzigingen van het AORTA-vertrouwensmodel. Uitgangspunt hierbij is dat het vertrouwensniveau/            betrouwbaarheidsniveau hetzelfde blijft.
-
-## Lijst met stubs/drivers/bestaande software
-to do
-
-# referentie:
-Trust over IP framework:
-https://trustoverip.org/
-
-OpenID for Verifiable Presentations:
-https://openid.net/specs/openid-4-verifiable-presentations-1_0.html
-
-OpenID for Verifiable Credential Issuance:
-https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html
-
+Het advies is om, naast het PoC project, een juridisch traject op te starten om de
+openstaande punten op juridisch vlak te adresseren.
