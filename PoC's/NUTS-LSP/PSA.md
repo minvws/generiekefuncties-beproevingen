@@ -16,7 +16,7 @@ Om brede uitwisseling in de zorg mogelijk te maken zijn er vier opties:
 
 2. Alle zorgaanbieders leveren een Nuts connectie
 
-3. LSP en Nuts met elkaar verbinden
+3. LSP en Nuts met elkaar verbinden met gebruik making van Generiek Functies
 
 4. Nieuwe infrastructuur opzetten voor het delen van medische gegevens
 
@@ -24,19 +24,15 @@ Binnen dit project is gekozen voor optie 3 om uitwisseling mogelijk te maken.
 Dit zal gedaan worden door gebruik te maken van de componenten uit de Generieke
 Functies.
 
-Zorgverleners zijn de beoogde gebruikers van de oplossing. De zorgkoepels, die
-over de autorisatieregels gaan, hebben gesteld dat alleen een beperkte set van
-BIG-rollen geautoriseerd is om medicatiegegevens te raadplegen/versturen (aan de
-hand van de UZI-rolcodes). Daarom wordt binnen dit project enkel met deze rollen
-gewerkt.
-
-Het doel van de oplossing is om zorgverleners over meer en betere gegevens te
-laten beschikken waardoor deze efficiënter en effectiever zorg kunnen verlenen.
+Uiteindelijk zijn zorgverleners zijn de beoogde gebruikers van de oplossing. 
+Het doel van dit project is om de Generieke Functies te kunnen beproeven voor 
+het realiseren van de koppeling tussen het LSP en Nuts.
 
 ## Context en scope
 
 Dit project beoogd het LSP (VZVZ), Nuts (Nuts community) en de voor de Generieke
-Functies (VWS en community) ontwikkelde modules aan elkaar te verbinden. Ook
+Functies (VWS en community) ontwikkelde modules in een beproeving aan elkaar te
+verbinden. Ook
 vraagt het aanpassingen in de zorgaanbieders gebruikte informatie systemen (XIS
 etc.).
 
@@ -58,16 +54,17 @@ resource. Dit is puur een demonstratie van technische werking en mogelijkheden.
 
 ## Architectuur samenvatting
 
-Deze PSA is opgesteld voor de het project team wat betrokken is bij de uitvoer
-van LSP x Nuts. Dit zijn VWS met iRealisatie als technische ondersteuning, VZVZ
+Deze PSA is opgesteld door het project team. Dit zijn VWS met iRealisatie 
+als technische ondersteuning, VZVZ
 voor LSP en Nuts. Daarnaast is dit PSA ook bedoelt voor de stakeholders: beleid
 bij VWS, IT leveranciers en juridische ondersteuning.
 
 De oplossing maakt nieuwe functies beschikbaar voor zorgverleners. Hiervoor
 moeten wel aanpassingen gemaakt worden in de technische laag voor identificatie
 en authenticatie, lokalisatie, autorisatie en adressering. Voor de aan AORTA
-deelnemende zorgaanbieder en -leveranciers is het uitgangspunt dat deze geen
-aanpassingen zullen gaan doen voor deze PoC.
+deelnemende zorgaanbieder en -leveranciers is het uitgangspunt dat deze beperkte
+aanpassingen zullen gaan doen voor deze PoC. Waar mogelijk zullen benodigde
+wijzigingen voor de aansluiting op de Generieke Functies via het LSP gedaan worden.
 
 Het project heeft als doel technisch oplossingen te ontwikkelen en beproeven in 
 een PoC. De PoC richt zich op de technische realisatie van de 
@@ -120,7 +117,13 @@ Het LSP autoriseert binnenkomende en uitgaande verzoeken op basis van het
 afgesproken autorisatieprotocol. Voor de meeste gegevensuitwisselingen die nu op
 AORTA draaien is een autorisatie op basis van UZI-rolcode afgesproken.
 
-#### Lokalisatie
+De zorgkoepels, die
+over de autorisatieregels gaan, hebben gesteld dat alleen een beperkte set van
+BIG-rollen geautoriseerd is om medicatiegegevens te raadplegen/versturen (aan de
+hand van de UZI-rolcodes). Daarom wordt binnen dit project enkel met deze rollen
+gewerkt.
+
+### Lokalisatie
 
 Lokalisatie van gegevens hangt nauw samen met toestemming.
 
@@ -133,18 +136,18 @@ Lokalisatie van gegevens hangt nauw samen met toestemming.
   maar wordt dit pas vrijgegeven als Mitz hiervoor een toestemming heeft
   afgegeven.
 
-#### Adressering
+### Adressering
 
 Als het LSP zelf een applicatie moet adresseren geschiedt dit door het al
 genoemde interne applicatieregister te raadplegen. Als een zorgverlener een
 andere zorgverlener zoekt/wil adresseren gebruikt met hiervoor het ZORG-AB
 adresboek (waarin ook een kopie zit van het applicatieregister).
 
-#### Logging
+### Logging
 
 Zowel agerend als reagerend XIS en het LSP houden allemaal een log bij
 
-#### Conversie van standaarden (FHIR)
+### Conversie van standaarden (FHIR)
 
 Het LSP beschikt over een berichten transformatiedienst die HL7v3 berichten kan
 omzetten naar HL7 FHIR en vice versa op basis van door Nictiz aangeleverde XSLT
@@ -319,7 +322,7 @@ Binnen dit project is dat vraagstuk buiten scope.
 Naast deze routes is het mogelijk dat binnen de PoC nog andere oplossingen bedacht 
 worden voor de authenticatie vraag.
 
-### LSP en Nuts connectiviteit
+### LSP en Nuts I&A
 
 Het ontwerp gaat uit van het uitbreiden van de het LSP met functionaliteit om
 Nuts te kunnen bevragen en bevraagd te worden door Nuts nodes. Hiervoor dienen
@@ -363,10 +366,10 @@ hoofdverantwoordelijke:
 Bij het uitwerken van de oplossing worden de volgende architectuur principes
 gebruikt.
 
-### Geen aanpassingen bij LSP deelnemer
+### Beperkte aanpassingen bij LSP deelnemer
 
 Voor de aan LSP AORTA deelnemende zorgaanbieder en -leveranciers is het
-uitgangspunt dat deze minimale aanpassingen zullen gaan doen voor deze PoC. Dit
+uitgangspunt dat deze beperkte aanpassingen zullen gaan doen voor deze PoC. Dit
 betekent dat aanpassingen, voor zover mogelijk, bij het LSP, Nuts of de
 Generieke Functies zullen plaatsvinden. Hiervan wordt enkel afgeweken wanneer de
 toekomstige visie voor de zorg / Generieke Functies al duidelijk is of dat dit 
@@ -419,7 +422,7 @@ situatie.
 
 ### Standaarden voor wallets
 
-Binnen dit project zal gewerkt worden met wallets voor het verwerken van
+Binnen dit project zal gewerkt worden met VCs voor het verwerken van
 (toegangs)bewijzen (credentials). Voor de PoC zal gekozen worden voor danwel
 bestaande oplossingen binnen Nuts, danwel oplossingen die voldoen aan de EIDAS
 richtlijnen die nu in ontwikkeling zijn.
