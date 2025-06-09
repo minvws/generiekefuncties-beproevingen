@@ -22,7 +22,7 @@ Om brede uitwisseling in de zorg mogelijk te maken zijn er vier opties:
 
 Binnen dit project is gekozen voor optie 3 om uitwisseling mogelijk te maken.
 Dit zal gedaan worden door gebruik te maken van de componenten uit de Generieke
-Functies.
+Functies. Naast technische specifcaties zullen ook allerlei organisatorische afspraken gemaakt moeten worden. Het idee is dat al deze technische en organisatorische afspraken zullen landen in (een nieuwe versie van) het Twiin afsprakenstelsel.
 
 Uiteindelijk zijn zorgverleners zijn de beoogde gebruikers van de oplossing. 
 Het doel van dit project is om de Generieke Functies te kunnen beproeven voor 
@@ -34,7 +34,7 @@ Dit project beoogd het LSP (VZVZ), Nuts (Nuts community) en de voor de Generieke
 Functies (VWS en community) ontwikkelde modules in een beproeving aan elkaar te
 verbinden. Ook
 vraagt het aanpassingen in de zorgaanbieders gebruikte informatie systemen (XIS
-etc.).
+etc.). 
 
 Bij uitwisseling tussen zorgaanbieders op LSP en Nuts zijn twee richtingen
 mogelijk:
@@ -59,12 +59,17 @@ als technische ondersteuning, VZVZ
 voor LSP en Nuts. Daarnaast is dit PSA ook bedoelt voor de stakeholders: beleid
 bij VWS, IT leveranciers en juridische ondersteuning.
 
-De oplossing maakt nieuwe functies beschikbaar voor zorgverleners. Hiervoor
-moeten wel aanpassingen gemaakt worden in de technische laag voor identificatie
-en authenticatie, lokalisatie, autorisatie en adressering. Voor de aan AORTA
-deelnemende zorgaanbieder en -leveranciers is het uitgangspunt dat deze beperkte
-aanpassingen zullen gaan doen voor deze PoC. Waar mogelijk zullen benodigde
-wijzigingen voor de aansluiting op de Generieke Functies via het LSP gedaan worden.
+De oplossing maakt nieuwe functies beschikbaar voor zorgverleners. 
+
+De beoogde oplossing voorziet in het digitaal ondertekenen van allerlei attesten/credentials voor identificatie
+en authenticatie, lokalisatie, autorisatie en adressering. Deze credentials moeten vaak door een eindgebruiker(sorganisatie) en/of door een vertrouwde uitgever digitaal ondertekend worden. De organisatie en technologie hiervoor is voor een groot deel van de partijen nog niet beschikbaar. Het bouwen en implementeren van de nieuw te maken technische en organisatorische hiervoor heeft n grote technische en organisatorische impact  op de systemen van de eindgebruikers. De verwachting is dat het nog jaren kan duren voordat alle partijen hieraan (kunnen) voldoen zal de oplossing ook een deze overgangssituatie moeten kunnen ondersteunen. Het concept van (Gekwalificeerde Twiin) knooppunten (GtK) helpt om een brug te slaan tussen de partijen en interoperabiliteit te bewerkstelligen. 
+
+Voor de aan AORTA deelnemende zorgaanbieders en -leveranciers is het uitgangspunt dat deze geen of slechts beperkte
+aanpassingen kunnen gaan doen voor deze PoC. Waar mogelijk zullen benodigde wijzigingen voor de aansluiting op de Generieke Functies via het LSP gedaan worden. Het LSP fungeert hier dan als GtK. De verwachting is dat een dergelijke constructie van het gebruik van een GtK ook van toepassing zal zijn voor andere Twiin deelnemers.
+
+ Het gebruik van knooppunten heeft wel impact op het (niet) kunnen toepassen van cryptografie. Knooppunten kunnen namelijk niet digitaal ondertekenen wat eigenlijk een zorgaanbieder/-verlener zou moeten doen. Vol vertrouwen op de technlogie is daarom voorlopig niet (altijd) mogelijk. Een deel van het te creeëren vertrouwen wat je eigenlijk met cryptografie ingevuld/ondersteund zou willen zien zal noodgedwongen nog organisatorisch moeten worden ingericht.  
+
+ Om te zorgen/borgen dat de benodigde aanvullende organisatorische afspraken worden op de beoogde manier worden ingevuld stelt Twiin eisen aan de GtK's en de achterliggende deelnemers. Om de gegevensuitwisselingen tussen de knoopunten interoperabel te maken stelt Twiin wél technische eisen aan de interfaces van de GtK's. Om een groeipad te faciliteren is het idee dat de beoogde technlogie van voor de generieke functies tussen de knoopunten al wel gebruikt wordt, maar de bijbeorende cryptografie op bepaalde punten tijdelijk op een andere manier wordt ingericht. In een dergelijk model kunnen de partijen die de beoogde cryptografie eigenljk moeten toepassen dit meer in hun eigen tempo doen, zonder dat er sprake moet zijn van een 'big bang overgang'.
 
 Het project heeft als doel technisch oplossingen te ontwikkelen en beproeven in 
 een PoC. De PoC richt zich op de technische realisatie van de 
