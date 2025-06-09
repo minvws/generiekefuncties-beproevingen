@@ -231,6 +231,8 @@ betrouwbaarheidsniveau authenticeren. Binnen de PoC zal gewerkt worden met een
 stub-implementatie van Dezi of een alternatieve (tijdelijke) oplossing voor
 authenticatie.
 
+Omdat het nog jaren kan duren voordat alle zorgaanbieders hun systemen en processen hebben aangepast om de nieuwe Dezi manier van authenticatie geïmplmenteerd te hebben is het voorstel om op aan de knooppunten de technlogische eisen te stellen voor authenticatie maar de partijen achter het knoopunt -binnen bepaalde kaders- een groeipad naar de gewenste situatie te ondersteunen. 
+
 ##### Authenticeren zorgaanbieder
 
 Het authenticeren van de zorgaanbieder zal vanuit Nuts naar het LSP gaan op basis
@@ -249,7 +251,7 @@ UZI-servercertificaat of een andere oplossing (zie hoofdstuk
 
 Bij de op het LSP aangesloten zorgaanbieder zal op de huidige wijze bepaald
 worden of er expliciete toestemming verleend is. Dit gebeurt lokaal bij 
-het bronsysteem.
+het bronsysteem of via Mitz.
 
 #### Lokalisatie
 
@@ -257,7 +259,7 @@ In de eindsituatie zal er gewerkt worden volgens de Generieke Functie
 lokalisatie. Hierbij wordt gewerkt met een lokalisatie index op basis van de in
 de lokalisatie werkgroep uitgewerkte opzet. Deze index wordt ook wel de
 Nationale Verwijs Index (NVI) genoemd. In de PoC wordt hiervoor gewerkt met een
-referentie implementatie.
+referentie implementatie. Voor een pilot/productiesituatie zouden alle partijen de NVI ingebruik genomen moeten hebben. Dit zal ook een proces van vermoedelijk enkele jaren zijn voordat het zover is. Wellicht zouden knooppunten de NVI namens hun zorgaanbieders kunnen vullen of is een combinatie met Mitz mogelijk waarin het abonnementenregister van Mitz met de NVI wordt gescynchroniseerd.
 
 #### Adressering
 
@@ -316,9 +318,9 @@ de PoC gekozen worden voor een tussentijdse oplossing voor het authenticatie
 vraagstuk. Twee mogelijke routes zijn:
 
 - Het LSP zet het de gedane zorgverlenerauthenticatie door het LSP om in een (VC)
-  formaat. Het Nuts-netwerk dient dan het LSP als uitgever te vertrouwen.
+  formaat. Het Nuts-netwerk dient dan het LSP als uitgever te vertrouwen. Dit past bij het GtK-model van Twiin
 - Het LSP stuurt authenticatiebewijs (SAML2/ JWT token) door naar het Nuts 
-  netwerk. De ontvangende Nuts node gecontroleerd dit zelf.
+  netwerk. De ontvangende Nuts node gecontroleert dit zelf.
 
 Het kan zijn dat de hierboven geschetste alternatieven voor Dezi tegen juridische
 obstakels lopen wanneer deze voor een pilot/productie fase ingezet moeten worden.
@@ -346,7 +348,7 @@ Voor authenticatie vanuit LSP naar Nuts zijn er de volgende mogelijkheden:
 1. De op LSP aangesloten systemen gaan VC's gebruiken voor authenticatie
    (significante change voor ECD's).
 2. Het LSP zet de zorgaanbiederauthenticatie om in een (VC) formaat. De
-   ontvangende Nuts node dient dan het LSP als uitgever te vertrouwen.
+   ontvangende Nuts node dient dan het LSP als uitgever te vertrouwen. Dit past bij het model van Twiin waarin de GtK's vertrouwd worden en Twiin kadervormende eisen stelt aan de zorgaanbieders achter het GtK om de gebruikersauthenticatie op eIDAS niveau hoog te doen.
 3. Het LSP stuurt het authenticatiebewijs (nu een SAML2 token) door naar
    de Nuts node. Deze kan dan dan controleren of dit klopt.
 
@@ -365,6 +367,8 @@ hoofdverantwoordelijke:
   - Dezi aansluiting
 - Nuts
   - Dezi aansluiting
+- Twiin
+   - opname afspraken in Twiin afsprakenstelsel (via het ontwikkelsupplement)
 
 ## Architectuur principes
 
@@ -386,14 +390,14 @@ met oog op de beproeving wenselijk is om mee te nemen in de PoC.
 
 Een van de vereisten bij het leveren van medischegegevens aan een zorgverlener
 van een andere organisatie is informatie over die persoon. Dit gaat dan om zaken
-als het BIG nummer en de rol code.
+als het BIG nummer en de rolcode.
 
 Om dit mogelijk te maken voor een uitwisseling tussen LSP en Nuts moet deze
 informatie op een betrouwbare wijze gedeeld kunnen worden. Het plan is om
 hiervoor een uitbreiding te realiseren in Dezi. De aanname is dat er een
 oplossing is waar draagvlak voor is bij het CIBG. Ook gaat dit project er vanuit
 dat er tijdens de PoC een stub (namaak) versie van Dezi gebruikt kan worden die
-deze functie heeft.
+deze functie heeft. Tussen de knooppunten kan wel afvast een duurzame implemnetatie afgesproken worden voor het authenticeren van zorgverleners die ook een groeimodel ondersteunt. Dat zou inhouden dat wel de gewenste VC's tussen de knooppunten worden uitgewisseld maar dat de digitale ondertekening daarvan op verschillende manieren nog gedaan mag worden, waaronder ondertekening van het knooppunt zelf. 
 
 ### Veilig netwerk
 
@@ -403,13 +407,13 @@ het per zorgaanbieder afsluiten van een contract om op het gesloten LSP is niet
 gewenst in de VVT sector vanwege de additionele kosten die dit met zich
 meebrengt. Voor nu wordt er daarom uitgegaan van een aansluiting van de VVT via
 het publieke internet. Binnen VWS wordt in het kader van het Landelijk Dekkend
-Netwerk (LDN) project gewerkt aan een zorg brede richtlijn. Binnen dit project
+Netwerk (LDN) project gewerkt aan een zorgbrede richtlijn. Binnen dit project
 wordt de aanname gedaan dat de uitkomsten hiervan geen negatieve invloed op de
 keuzes binnen het project hebben.
 
 Voor de PoC wordt gewerkt met het publieke internet. Een definitieve oplossing
 die voldoet aan de juridische en andere eisen met betrekking tot veilig netwerk
-is buiten de scope van deze PoC.
+is buiten de scope van deze PoC, maar is voor een pilot/productie situatie wel randvoorwaardelijk.
 
 ### Toestemming
 
@@ -418,14 +422,7 @@ Generieke Functie Toestemmingen op basis van een Online Toestemmingsvoorziening
 (OTV). Dit is nodig omdat de lokalisatie index (NVI) anders
 niet kan bepalen of de toegang geautoriseerd kan worden. In de PoC fase kan
 hiervoor een stub ingezet worden of worden uitgegaan van toestemming 
-(autorisatie op NVI is dan buiten scope).
-
-### Logging
-
-Voor logging zijn in dit project geen extra eisen ten opzichte van de huidige
-situatie.
-
-### Standaarden voor wallets
+(autorisatie op NVI is dan buiten scope). Voor een productiefase zou de NVI toestemming bij Mitz kunnen controleren of met de partijen die lokaal toestemming registreren afspreken dat die toestemming ook voor de NVI wordt gevraagd.
 
 Binnen dit project zal gewerkt worden met VCs voor het verwerken van
 (toegangs)bewijzen (credentials). Voor de PoC zal gekozen worden voor danwel
@@ -468,12 +465,14 @@ juridisch grondslagen missen. Binnen deze PoC wordt hier geen activiteit op
 ondernomen. Wel kunnen ontwerpen en implementaties voorgelegd worden ter
 beoordeling op juridische en organisatorische haalbaarheid.
 
+In de situatie waarin knooppunten vertrouwd worden om bepaalde zaken namens de zorgaanbieders/-verleners invuld zijn soms schuren met wat er in de NEN7512 wordt vereist en in het geval er sprake is van een gegevensuitwisseling met een elektronisch uitwisselingsysteem is het voldoen aan de NEN7512 een wettelijk vereiste. 
+
 ### Generieke functies
 
 De specificaties voor de generieke functies zijn nog in ontwikkeling. Voor de
 PoC kan gestart worden met concept versies. Eventuele aanpassingen in
-specificaties kunnen gevolgen hebben voor zowel de Gerieke Functie componenten
-als het LSP, Nuts en de aangesloten XIS systemen.
+specificaties kunnen gevolgen hebben voor zowel de Generieke Functie componenten
+als het LSP, Nuts en de aangesloten XIS systemen. We zullen onder ogen moeten zien dan het volledig implemneteren van de Generiek Functies een proces van jaren kan zijn. In de tussentijd zal een groeimodel ondersteund moeten worden om gegegvensuitwisseling op brede schaal mogelijk te maken. 
 
 ## Advies en goedkeuring
 
